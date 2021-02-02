@@ -20,16 +20,22 @@ jobs:
       - name: Build
         run: make
 
-      - name: Get added/modified files
+      - name: Get changed files
         id: get_files
-        run: |
-          output=(git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD)
-          echo "output: $output"
-          echo "::set-output name=files::$output"
+        uses: lots0logs/gh-action-get-changed-files@2.1.4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Get added/modified files
+      #   id: get_files
+      #   run: |
+      #     output=(git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD)
+      #     echo "output: $output"
+      #     echo "::set-output name=files::$output"
 
       - name: Lint
         run: |
-          IFS="," read -a myarray <<< ${{ steps.get_files.outputs.files }}
+          IFS="," read -a myarray <<< ${{ steps.get_files.outputs.modified }}
           for file in "${myarray[@]}"; do
             echo "get file: $file" # TODO: remove this debug line
 
@@ -40,6 +46,6 @@ jobs:
                 echo "Lint check failed"
                 exit 1
               fi
-              
+
             fi
           done
