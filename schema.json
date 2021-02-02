@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "comment": "this field must be globally unique, there will be another step to check if it conflicts with other file"
+        },
+        "birthday": {
+            "type": "string",
+            "format": "date"
+        },
+        "address": {
+            "type": "object",
+            "properties": {
+                "street_address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
