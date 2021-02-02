@@ -36,7 +36,8 @@ jobs:
               output/lint schema.json "$file"
               
               if [[ $? -ne 0 ]]; then
-                core.setFailed('Lint check failed')
+                echo "Lint check failed"
+                exit 1
               fi
               
             fi
