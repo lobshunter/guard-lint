@@ -1,0 +1,43 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+         fetch-depth: 2 # by default only fetch one commit, then can't get diff files
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+
+    - name: Build
+      run: make
+    
+    - name: Get added/modified files
+      id: get_files
+      run: |
+        $output=(git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD)
+        echo "::set-output name=files::$output"
+      
+    - name: Lint
+      run: |
+            IFS="," read -a myarray <<< ${{ steps.get_files.outputs.files }}
+            for file in "${myarray[@]}"; do
+              echo "get file: $file" # TODO: remove this debug line
+
+              if [[ "$file" == "*.yml" || "$file" == "*.yaml" ]]; then
+                output/lint schema.json "$file"
+                
+                if [[ $? -ne 0 ]]; then
+                  core.setFailed('Lint check failed')
+                fi
+                
+              fi
+            done
