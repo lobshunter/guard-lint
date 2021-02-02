@@ -33,11 +33,11 @@ jobs:
       #     echo "output: $output"
       #     echo "::set-output name=files::$output"
 
-      - name: Lint
-        run: |
-          IFS="," read -a myarray <<< ${{ steps.get_files.outputs.modified }}
-          for file in "${myarray[@]}"; do
-            echo "get file: $file" # TODO: remove this debug line
+      - id: files
+        uses: jitterbit/get-changed-files@v1
+      - run: |
+          for file in ${{ steps.files.outputs.all }}; do
+            echo "Do something with this ${file}."
 
             if [[ "$file" == "*.yml" || "$file" == "*.yaml" ]]; then
               output/lint schema.json "$file"
@@ -46,6 +46,19 @@ jobs:
                 echo "Lint check failed"
                 exit 1
               fi
-
             fi
+
           done
+      # - name: Lint
+      #   run: |
+      #     IFS="," read -a myarray <<< ${{ steps.get_files.outputs.modified }}
+      #     for file in "${myarray[@]}"; do
+      #       echo "get file: $file" # TODO: remove this debug line
+      #       if [[ "$file" == "*.yml" || "$file" == "*.yaml" ]]; then
+      #         output/lint schema.json "$file"
+      #         if [[ $? -ne 0 ]]; then
+      #           echo "Lint check failed"
+      #           exit 1
+      #         fi
+      #       fi
+      #     done
