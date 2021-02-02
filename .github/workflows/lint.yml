@@ -24,6 +24,7 @@ jobs:
         id: get_files
         run: |
           output=(git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD)
+          echo "output: $output"
           echo "::set-output name=files::$output"
 
       - name: Lint
