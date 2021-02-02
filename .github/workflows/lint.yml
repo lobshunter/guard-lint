@@ -39,7 +39,7 @@ jobs:
           for file in ${{ steps.files.outputs.all }}; do
             echo "Do something with this ${file}."
 
-            if [[ "$file" == "*.yml" || "$file" == "*.yaml" ]]; then
+            if [[ $file =~ \.ya?ml$ ]]; then
               output/lint schema.json "$file"
               
               if [[ $? -ne 0 ]]; then
