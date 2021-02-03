@@ -29,9 +29,9 @@ func sortFilesByMTime(files []string) {
 
 	sort.Slice(files, func(i, j int) bool {
 		statI, err := os.Stat(files[i])
-		doneOrDieWithMessage(err, fmt.Sprintf("file: %s; stat err: %v", files[i], err))
+		doneOrDieWithMessage(err, fmt.Sprintf("file: %s; stat err: %v\n", files[i], err))
 		statJ, err := os.Stat(files[j])
-		doneOrDieWithMessage(err, fmt.Sprintf("file: %s; stat err: %v", files[j], err))
+		doneOrDieWithMessage(err, fmt.Sprintf("file: %s; stat err: %v\n", files[j], err))
 
 		return statI.ModTime().Before(statJ.ModTime())
 	})
@@ -52,30 +52,30 @@ func main() {
 		// TODO: path of name depends on schema, maybe pass key path via os.args
 		data, err := ioutil.ReadFile(filename)
 		if err != nil {
-			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; readfile err: %v", filename, err))
+			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; readfile err: %v\n", filename, err))
 			continue
 		}
 
 		meta := make(map[string]interface{})
 		err = yaml.Unmarshal(data, &meta)
 		if err != nil {
-			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; unmarshal err: %v", filename, err))
+			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; unmarshal err: %v\n", filename, err))
 			continue
 		}
 
 		if _, ok := meta["name"]; !ok {
-			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; missing expected key: [name]", filename))
+			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; missing expected key: [name]\n", filename))
 			continue
 		}
 
 		name, ok := meta["name"].(string)
 		if !ok {
-			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; invalid type of [name], expect string", filename))
+			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; invalid type of [name], expect string\n", filename))
 			continue
 		}
 
 		if _, ok := names[name]; ok {
-			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; name in %s conflicts with name in %s", filename, filename, names[name]))
+			errMsgs = append(errMsgs, fmt.Sprintf("file: %s; name in %s conflicts with name in %s\n", filename, filename, names[name]))
 			continue
 		} else {
 			names[name] = filename

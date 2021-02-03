@@ -33,21 +33,21 @@ func main() {
 	for _, yamlFile := range os.Args[2:] {
 		yamlData, err := ioutil.ReadFile(yamlFile)
 		if err != nil {
-			errs = append(errs, fmt.Sprintf("file: %s; readfile err: %v", yamlFile, err))
+			errs = append(errs, fmt.Sprintf("file: %s; readfile err: %v\n", yamlFile, err))
 			continue
 		}
 
 		objects := make(map[string]interface{}) // NOTE: it doesn't work if yaml is a list
 		err = yaml.Unmarshal(yamlData, &objects)
 		if err != nil {
-			errs = append(errs, fmt.Sprintf("file: %s; unmarshal err: %v", yamlFile, err))
+			errs = append(errs, fmt.Sprintf("file: %s; unmarshal err: %v\n", yamlFile, err))
 			continue
 		}
 
 		documentLoader := gojsonschema.NewGoLoader(objects)
 		result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 		if err != nil {
-			errs = append(errs, fmt.Sprintf("file: %s, schema validation err: %v", yamlFile, err))
+			errs = append(errs, fmt.Sprintf("file: %s, schema validation err: %v\n", yamlFile, err))
 			continue
 		}
 

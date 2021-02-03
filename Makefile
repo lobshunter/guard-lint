@@ -18,7 +18,7 @@ unique-name:
 lint:
 	@# git diff-tree will get added/modified files in last commit
 	@# grep will extract files under $(YAML_PATH) folder and ends with yaml/yml (i.e. only lint yaml files under example folder)
-	@output/lint schema.json `git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD | grep -E "^$(YAML_PATH).+(yaml|yml)$$"` 
+	@output/lint schema.json `find $(YAML_PATH) -name '*.yaml' -o -name '*.yml'`
 
 check-unique:
 	@output/unique `find $(YAML_PATH) -name '*.yaml' -o -name '*.yml'`
