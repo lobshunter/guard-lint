@@ -17,7 +17,7 @@ func usage() {
 func main() {
 	if len(os.Args) < 3 {
 		usage()
-		os.Exit(1)
+		return
 	}
 
 	// schemaFile := os.Args[1]
