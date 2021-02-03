@@ -29,36 +29,42 @@ func main() {
 
 	schemaLoader := gojsonschema.NewBytesLoader(schemaData)
 
+	errs := []string{} // collect all errors in a round, to avoid run lint tool multiple times
 	for _, yamlFile := range os.Args[2:] {
 		yamlData, err := ioutil.ReadFile(yamlFile)
 		if err != nil {
-			fmt.Printf("error reading yaml file: %s, err: %v\n", yamlFile, err)
-			os.Exit(1)
+			errs = append(errs, fmt.Sprintf("error reading yaml file: %s, err: %v", yamlFile, err))
+			continue
 		}
 
 		objects := make(map[string]interface{}) // NOTE: it doesn't work if yaml is a list
 		err = yaml.Unmarshal(yamlData, &objects)
 		if err != nil {
-			fmt.Printf("error unmarshaling yaml file: %s, err: %v\n", yamlFile, err)
-			os.Exit(1)
+			errs = append(errs, fmt.Sprintf("error unmarshaling yaml file: %s, err: %v", yamlFile, err))
+			continue
 		}
 
 		documentLoader := gojsonschema.NewGoLoader(objects)
 		result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 		if err != nil {
-			fmt.Printf("error validating yaml file: %s, err: %v\n", yamlFile, err)
-			os.Exit(1)
+			errs = append(errs, fmt.Sprintf("error validating yaml file: %s, err: %v", yamlFile, err))
+			continue
 		}
 
 		if result.Valid() {
-			return
+			continue
 		}
 
-		fmt.Printf("file: %s is invalid: \n", yamlFile)
+		errs = append(errs, fmt.Sprintf("\nfile: %s is invalid: ", yamlFile))
 		for _, desc := range result.Errors() {
-			fmt.Printf("- %s\n", desc)
+			errs = append(errs, fmt.Sprintf("- %s", desc))
 		}
+	}
 
+	if len(errs) > 0 {
+		for _, v := range errs {
+			fmt.Println(v)
+		}
 		os.Exit(1)
 	}
 }

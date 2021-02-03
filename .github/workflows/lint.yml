@@ -20,21 +20,5 @@ jobs:
       - name: Build
         run: make
 
-      - name: Get added/modified files
-        id: get_files
-        run: |
-          echo `git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD`
-
-      - name: "Lint"
-        id: files
-        uses: jitterbit/get-changed-files@v1
-      - run: |
-          echo "files: ${{ steps.files.outputs.added_modified }}"
-          for file in ${{ steps.files.outputs.added_modified }}; do
-            echo "lint checking ${file}."
-
-            if [[ $file =~ \.ya?ml$ ]]; then
-              output/lint schema.json "$file"
-            fi
-
-          done
+      - name: Lint
+        run: make lint
