@@ -20,6 +20,11 @@ jobs:
       - name: Build
         run: make
 
+      - name: Get added/modified files
+        id: get_files
+        run: |
+          echo `git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD`
+
       - name: "Lint"
         id: files
         uses: jitterbit/get-changed-files@v1
