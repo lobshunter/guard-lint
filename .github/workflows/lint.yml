@@ -20,45 +20,16 @@ jobs:
       - name: Build
         run: make
 
-      - name: Get changed files
-        id: get_files
-        uses: lots0logs/gh-action-get-changed-files@2.1.4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Get added/modified files
-      #   id: get_files
-      #   run: |
-      #     output=(git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD)
-      #     echo "output: $output"
-      #     echo "::set-output name=files::$output"
-
-      - id: files
+      - name: "Lint"
+        id: files
         uses: jitterbit/get-changed-files@v1
       - run: |
-          for file in ${{ steps.files.outputs.all }}; do
-            echo "Do something with this ${file}."
+          echo "files: ${{ steps.files.outputs.added_modified }}"
+          for file in ${{ steps.files.outputs.added_modified }}; do
+            echo "lint checking ${file}."
 
             if [[ $file =~ \.ya?ml$ ]]; then
               output/lint schema.json "$file"
-              
-              if [[ $? -ne 0 ]]; then
-                echo "Lint check failed"
-                exit 1
-              fi
             fi
 
           done
-      # - name: Lint
-      #   run: |
-      #     IFS="," read -a myarray <<< ${{ steps.get_files.outputs.modified }}
-      #     for file in "${myarray[@]}"; do
-      #       echo "get file: $file" # TODO: remove this debug line
-      #       if [[ "$file" == "*.yml" || "$file" == "*.yaml" ]]; then
-      #         output/lint schema.json "$file"
-      #         if [[ $? -ne 0 ]]; then
-      #           echo "Lint check failed"
-      #           exit 1
-      #         fi
-      #       fi
-      #     done
