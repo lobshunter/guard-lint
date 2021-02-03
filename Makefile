@@ -3,15 +3,22 @@ GO 		:= $(GOENV) go
 
 LDFLAGS := -w -s
 
-default: vet build
+YAML_PATH := examples
+
+default: vet lint-schema unique-name
 
 vet:
 	$(GO) vet ./...
 
-build:
-	$(GO) build -ldflags '$(LDFLAGS)' -o  output/lint .
+lint-schema:
+	$(GO) build -ldflags '$(LDFLAGS)' -o  output/lint lint-tools/lint-schema/main.go
+unique-name:
+	$(GO) build -ldflags '$(LDFLAGS)' -o  output/unique lint-tools/unique-name/main.go
 
 lint:
 	@# git diff-tree will get added/modified files in last commit
-	@# grep will extract files under examples folder and ends with yaml/yml (only lint yaml files under example folder)
-	@git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD | grep -E "^examples.+(yaml|yml)$$" | xargs output/lint schema.json
+	@# grep will extract files under $(YAML_PATH) folder and ends with yaml/yml (i.e. only lint yaml files under example folder)
+	@output/lint schema.json `git diff-tree --name-only --no-commit-id --diff-filter=AM -r HEAD | grep -E "^$(YAML_PATH).+(yaml|yml)$$"` 
+
+check-unique:
+	@output/unique `find $(YAML_PATH) -name '*.yaml' -o -name '*.yml'`

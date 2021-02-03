@@ -22,3 +22,6 @@ jobs:
 
       - name: Lint
         run: make lint
+
+      - name: Unique Check
+        run: make check-unique
